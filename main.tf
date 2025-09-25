@@ -1,24 +1,17 @@
-terraform {
-  required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 3.0.0"
-    }
-  }
-}
-
+# Use Docker provider
 provider "docker" {
-  host = "npipe:////./pipe/docker_engine"   # Windows Docker named pipe
+  host = "unix:///var/run/docker.sock"
 }
 
-resource "docker_image" "nginx" {
-  name         = "nginx:latest"
-  keep_locally = false
+# Pull a Docker image
+resource "docker_image" "nginx_image" {
+  name = "nginx:latest"
 }
 
-resource "docker_container" "nginx" {
-  name  = "terraform-nginx"
-  image = docker_image.nginx.id
+# Create a container from the image
+resource "docker_container" "nginx_container" {
+  image = docker_image.nginx_image.latest
+  name  = "demo-nginx-container"
   ports {
     internal = 80
     external = 8080
